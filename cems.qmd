@@ -1,5 +1,5 @@
 ---
-title: "Model-Based Systems Engineering (MBSE) of an Inertial Sensor System and IC Design"
+title: "Model-Based Systems Engineering (MBSE) of a Delta Sigma Modulator based IC Design for Analog to Digital Converter"
 format: html
 ---
 
@@ -99,29 +99,80 @@ The simulation configuration comprises parameter settings for the following: inp
 
 The input and output signals of a First-Order Sigma-Delta (ΣΔ) modulator, which uses noise shaping and oversampling techniques for high-resolution analog-to-digital conversion (ADC), are represented by the graph. The analog input signal is represented by the green waveform (V(vin)), which is a sinusoidal waveform that is digitalized. In order to show how the modulator can shape quantization noise, the blue waveform (V(vq)) represents the internal quantized signal, which is influenced by the integrator and feedback loop. As the amplitude of the input signal changes, so does the density of high (1s) and low (0s) pulses in the final pulse-density modulated (PDM) output, which is represented by the red waveform (V(vd)). While the bitstream maintains a balanced distribution of 1s and 0s around zero crossings, this modulation approach guarantees that there are more 1s at higher input levels using the noise shaping concept, the ΣΔ modulator efficiently drives quantization noise to higher frequencies. This improves the in-band signal-to-noise ratio (SNR), and high-frequency noise is subsequently eliminated using low-pass decimation filtering. For low-power applications where great dynamic range and power efficiency are crucial, such as sensor interface, low-frequency audio processing, and biomedical data acquisition, this technique makes first-order ΣΔ modulators perfect.
 
-## LT Spice Output of 1st Order Sigma-Delta Modulator - FFT
-![Figure 12: Frequency-Domain Response of a First-Order ΣΔ Modulator](images/FFT1.png)
-
-The output signal (Vd) from a Second-Order Sigma-Delta (ΣΔ) modulator in LTSpice is the subject of the graph's Fast Fourier Transform (FFT) analysis. Power spectral density, measured in decibels (dB), is represented on the y-axis, while the frequency spectrum, from Hz to MHz, is represented on the x-axis. A crucial feature of second-order ΣΔ modulators, the quantization noise shaping effect is demonstrated by the FFT plot. This phenomenon causes the noise level to be pushed toward higher frequencies and drastically decreased at lower frequencies. The strong signal and low noise in the low-frequency zone (below 1 kHz) show that the band of interest is well suppressed from noise. The modulator moves quantization noise to higher frequencies where it may be readily filtered out, as evidenced by the noise floor rising as frequency rises over 10 kHz. 
-
-The oversampling and noise shaping effects that contribute to a high signal-to-noise ratio (SNR) in the low-frequency region are indicated by the deep notch close to 100 kHz. The presence of high-frequency quantization noise is confirmed by the growing spectral density at higher frequencies; this noise can be eliminated by using a low-pass decimation filter. This FFT analysis confirms that the second-order ΣΔ modulator effectively reduces noise, enhancing resolution in high-precision ADC applications such digital communication systems, audio processing, and sensor data collection.
-
 ## LTSpice System Design of 2nd Order Sigma-Delta Modulator
-![Figure 13: Implementation of a Second-Order ΣΔ Modulator in LTSpice.](images/spice2.png)
+![Figure 12: Implementation of a Second-Order ΣΔ Modulator in LTSpice.](images/spice2.png)
 
 In high-precision analog-to-digital conversion (ADC), a second-order sigma-delta (ΣΔ) modulator is a crucial part, as shown in this LTSpice circuit diagram. A comparator, a D flip-flop, operational amplifiers, and switched-capacitor circuits are all incorporated into the design to create a feedback loop that improves quantization accuracy via noise shaping. Proper charge transfer is ensured by processing the sine wave input signal (Vin) through a switched-capacitor network that is regulated by non-overlapping clock signals (phi1 and phi2). The first step is a switched-capacitor integrator, in which the difference between the input and feedback signal (Vfb) is accumulated by capacitors (Cs1) and an operational amplifier. After that, a second integrator pushes quantization noise to higher frequencies, further fine-tuning the noise shape. 
 
 The analog signal is subsequently transformed into a pulse-density modulated (PDM) digital output by passing the second-stage output (Vx2) via a comparator. To provide steady output, a D flip-flop (DFF) synchronizes the bitstream (Vd) with the clock signals. By reducing quantization mistakes and increasing accuracy, the feedback loop continuously improves the signal. The transient analysis (.tran 40m uic) guarantees a 40ms simulation run without determining the DC operating point, enabling accurate modulator behavior observation. Evaluating the output using an FFT analysis aids in determining how well noise shaping and overall performance work. This second-order arrangement greatly lowers in-band quantization noise in comparison to a first-order modulator, moving it toward higher frequencies where it may be efficiently filtered.
 
-## LTSpice Output of 2nd order Sigma-Delta Modulator
-![Figure 14: Time-Domain Response of a Second-Order ΣΔ Modulator.](images/ltspice2.png)
+## OTA Overview
+![Figure 13: 5T OTA](images/5TOTA.png)
 
-The input and output signals of a Second-Order Sigma-Delta (ΣΔ) modulator, a crucial design in high-resolution analog-to-digital conversion (ADC), are depicted in the graph below. This modulator uses higher-order noise shaping to achieve improved quantization error suppression. A sinusoidal waveform that has been oversampled and quantized is the analog input signal represented by the green waveform (V(vin)). The internal quantized signal is represented by the blue waveform (V(vq)), which is the result of two cascaded integrators that remove low-frequency quantization noise more efficiently than a first-order ΣΔ modulator. The last pulse-density modulated (PDM) bitstream is represented by the red waveform (V(vd)), in which the input amplitude is dynamically correlated with the density of 1s and 0s. By redistributing more quantization noise to higher frequencies, the second-order structure improves noise shaping and raises the in-band signal-to-noise ratio (SNR). This, when paired with a decimation filter, produces a more accurate and smooth digital representation of the input signal. The second-order ΣΔ modulator achieves higher effective resolution in applications that need high dynamic range, like precision instrumentation, high-fidelity audio processing, and biomedical signal collection, since it has steeper noise shaping than a first-order modulator.
+The 5-Transistor Operational Transconductance Amplifier (5T OTA) is a compact and power-efficient circuit widely used in analog signal processing applications. It consists of a differential input pair (M1, M2), an active load (M3, M4), and a current source (M5, M6, and I_bias), making it a simple yet effective voltage-to-current amplifier. The circuit operates by amplifying the differential input voltage and converting it into an output current, with the active load enhancing the voltage gain. Due to its minimal transistor count, the 5T OTA offers advantages such as low power consumption, compact design, and ease of integration in ICs. It is commonly employed in low-power filters, sensor interfaces, and biomedical applications. However, it has limitations, including lower gain and reduced common-mode rejection ratio compared to more complex OTA architectures. Despite these trade-offs, the 5T OTA remains a fundamental building block in analog circuit design, particularly in low-power and portable applications.
 
-## LT Spice Output of 2nd Order Sigma-Delta Modulator - FFT
-![Figure 15: Frequency-Domain Response of a Second-Order ΣΔ Modulator](images/FFT2.png)
+## Basics of 5T OTA
+### Purpose of an OTA
+An Operational Transconductance Amplifier (OTA) is an analog circuit that converts a differential input voltage (V_in+ - V_in-) into an output current (I_out). Unlike a traditional operational amplifier (op-amp), which provides a voltage output and often relies on negative feedback for operation, an OTA’s output is a current, making it suitable for applications such as voltage-controlled amplifiers, filters, and signal processing in low-power systems.
 
-The Fast Fourier Transform (FFT) analysis of the output signal (Vd) from a First-Order Sigma-Delta (ΣΔ) modulator that was simulated in LTSpice is shown in this graph. While the y-axis displays the power spectral density in decibels (dB), the x-axis depicts the frequency domain, which spans from Hz to MHz. Quantization noise is reduced at low frequencies and redistributed toward higher frequencies in the FFT output, illustrating the fundamental noise shaping property of a first-order ΣΔ modulator. The signal is still strong and has a lower noise level in the lower frequency range (below 1 kHz), guaranteeing accurate representation in this band. Nevertheless, noise levels sharply increase when the frequency rises over 10 kHz, suggesting that first-order modulators offer less noise reduction than higher-order systems. 
+### 5T OTA Topology
+The 5-Transistor OTA (5T OTA) is a simple yet efficient differential amplifier with a current mirror load. It consists of the following key components:
 
-The oversampling and feedback effect that helps increase the signal-to-noise ratio (SNR) in the required frequency range is suggested by the presence of a notch close to 100 kHz. A low-pass decimation filter is required to extract the useable signal because of the growing noise at high frequencies. This FFT demonstrates that although the first-order ΣΔ modulator suppresses low-frequency noise effectively, it provides less aggressive noise shaping than a second-order modulator. As a result, it is appropriate for low-to-moderate resolution ADC applications like sensor interfacing, simple digital signal processing, and basic audio conversion.
+- Input Differential Pair (M1, M2): These two transistors form the differential input stage, amplifying the voltage difference between the input terminals.
+- Tail Current Source (M5): This transistor sets the bias current for the differential pair, controlling the overall transconductance (g_m) of the OTA.
+- Current Mirror Load (M3, M4): These two transistors form an active load that converts the differential currents from the input pair into a single-ended output current.
+
+## Sizing an OTA
+Operational Transconductance Amplifier (OTA) sizing involves determining the W/L (Width/Length) ratios of each NMOS and PMOS transistor in the circuit to meet desired performance specifications such as gain, bandwidth, power consumption, and transconductance (g_m). Using the MOSFET sizing script available at [MOSFET Sizing Tool](https://iic-jku.github.io/analog-circuit-design/sizing/sizing_mosfet_diode-preview.html) , we can compute these ratios based on the process parameters and design constraints.
+
+## Testing an OTA
+Based on the derived W/L ratios, we implemented a 5T OTA model in Xschem, ensuring proper transistor sizing and connectivity. A dedicated symbol (OTA_test) was created for seamless integration into larger circuits. The OTA was tested through DC operating point analysis, AC analysis for gain and bandwidth, transient response evaluation, and common-mode rejection ratio (CMRR) measurements to verify performance. Simulation results confirmed that the OTA operates as expected, making it suitable for further integration into analog signal processing applications.
+
+## AC analysis of an OTA
+![Figure 14: AC Analysis Testbench](images/AC_Analysis_Testbench.jpg)
+
+![Figure 15: AC Analysis Output](images/AC_Analysis_Output.jpg)
+
+To evaluate the frequency response of the 5T OTA, we performed an AC analysis using Xschem and simulated the open-loop gain. The analysis involved applying a small-signal AC input and sweeping the frequency over a wide range. The gain was then plotted on a logarithmic scale to observe the frequency response characteristics. From the plot, we obtained a **DC gain of approximately 40 dB**, confirming that the OTA provides a significant amplification factor in the low-frequency region. The frequency response also shows a characteristic roll-off at higher frequencies, which defines the unity-gain bandwidth and overall performance of the OTA. This AC analysis is essential for understanding the amplifier's stability, bandwidth, and suitability for specific analog applications.
+
+## OTA as a Voltage Buffer
+![Figure 16: OTA Voltage Buffer Testbench](images/OTA_Voltage_Buffer_Testbench.jpg)
+
+![Figure 17: OTA Voltage Buffer Output](images/OTA_Voltage_Buffer_Output.jpg)  
+
+To validate the 5T OTA’s performance, we designed a voltage buffer testbench using Xschem. The OTA was configured to operate in its linear region, where it acts as a unity-gain amplifier. A DC sweep was applied to the input (Vin), and the corresponding Vout was plotted to verify the behavior. The simulation results confirm that the OTA maintains a nearly linear voltage transfer characteristic, indicating that it effectively functions as a buffer. This test demonstrates the OTA’s ability to faithfully reproduce input variations with minimal distortion, making it suitable for applications such as signal conditioning and impedance isolation.
+
+## OTA as a Comparator
+![Figure 18: OTA Comparator Testbench](images/OTA_Comparator_Testbench.jpg)
+
+![Figure 19: OTA Comparator Output](images/OTA_Comparator_Output.jpg)
+
+To further validate the OTA’s functionality, we designed a test bench to evaluate its performance as a comparator. Given that the OTA architecture inherently supports differential input processing, it can be used for comparison operations, as seen in IDSM1 and IDSM2. In the test setup, a sine wave signal was applied to one input while a DC reference voltage was provided to the other. The simulation results confirm that the OTA successfully acts as a comparator, producing a high or low output depending on whether the input signal is above or below the reference voltage. The observed behavior aligns with expected theoretical results, demonstrating the OTA's capability in signal processing and decision-making applications such as analog-to-digital conversion and threshold detection.
+
+## OTA as an Integrator
+![Figure 20: OTA Integrator Testbench](images/OTA_Integrator_Testbench.jpg)
+
+![Figure 21: OTA Integrator Output](images/OTA_Integrator_Output.jpg)
+
+![Figure 22: OTA Integrator Ideal Output](images/OTA_Integrator_Ideal_Output.jpg)
+
+Now that the OTA has been verified to function as expected, we proceeded to design an OTA-based integrator using a switched capacitor integrator configuration. The circuit was implemented and simulated to observe the integration of an input signal over time. The results confirm that the OTA successfully performs the integration operation, producing a steadily increasing output voltage, as expected from an ideal integrator. The stepped nature of the output in the simulation is a characteristic of the switched capacitor approach, demonstrating charge accumulation over discrete time steps.
+
+## Switched Capacitor Integrator
+The behavior of the OTA as a switched-capacitor integrator is not working as expected and exhibits leaky behavior.  
+
+A switched-capacitor integrator is a circuit that performs the integration of an input voltage signal using capacitors and switches controlled by a clock signal. It mimics the behavior of a continuous-time integrator in the discrete-time domain. The integration process occurs in three phases: sampling, charge transfer, and accumulation. During the sampling phase, a capacitor charges to the input voltage, and in the transfer phase, this charge is moved to the integration capacitor, resulting in a cumulative voltage change. However, in the current implementation, the integrator shows leakage, meaning the charge is not being properly retained in the integration capacitor. This could be due to charge injection from the switches, insufficient capacitance values, or non-idealities in the OTA itself. Further debugging and parameter tuning are required to achieve the expected integration behavior.
+
+## Conclusion
+The design and implementation of an OTA-based switched-capacitor integrator proved to be a challenging endeavor. While the theoretical analysis and initial circuit design were based on the ideal behavior of an OTA, including non-idealities and mismatches in the OTA's performance, deviated significantly from the expected results. These non-idealities introduced complexities that hindered the intended operation of the switched-capacitor integrator.
+
+Debugging this design highlighted the importance of accounting for OTA  both the design and simulation phases. Future efforts could focus on refining the OTA design to address these limitations, as well as exploring circuit-level compensation techniques to improve the performance of the integrator. With further optimization and a deeper understanding of the OTA’s behavior, the implementation of a switched-capacitor integrator using an OTA remains a promising approach for high-performance analog signal processing.
+
+## References
+- [https://iic-jku.github.io/analog-circuit-design/#sec-basic-ota](https://iic-jku.github.io/analog-circuit-design/#sec-basic-ota)
+- [https://iic-jku.github.io/analog-circuit-design/sizing/sizing_mosfet_diode-preview.html](https://iic-jku.github.io/analog-circuit-design/sizing/sizing_mosfet_diode-preview.html)
+- B. E. Boser and B. A. Wooley. The design of sigma-delta modulation analog-to-digital converters. IEEE Journal of Solid-State Circuits, 23(6):1298--1308, December 1988.
+- Bernhard E. Boser. Eecs247: Analog-digital interface integrated circuits. Course notes, University of California Berkeley, February 2003.
+- Michael Clifford. Fundamental principles behind the sigma-delta adc topology: Part 1. Technical report, Analog Devices (AD), January 2016.
+- Michael Clifford. Fundamental principles behind the sigma-delta adc topology: Part 2. Technical report, Analog Devices (AD), February 2016. 
 </div>
